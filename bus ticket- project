@@ -1,2 +1,311 @@
-It is a small project where we use linked list to make it..
-Author - Junaid Bin Jahangir
+#include <iostream>
+#include <string>
+#include <vector>
+#include <iomanip>
+#include <cstdlib>
+#include <limits>
+using namespace std;
+struct Passenger
+{
+    string name;
+    int seatNumber;
+};
+class Bus
+{
+public:
+    string busNumber;
+    string driverName;
+    string arrivalTime;
+    string departureTime;
+    string from;
+    string to;
+    vector<Passenger> passengers;
+    Bus* next;
+
+    Bus(string bn, string dn, string at, string dt, string f, string t)
+    {
+        busNumber = bn;
+        driverName = dn;
+        arrivalTime = at;
+        departureTime = dt;
+        from = f;
+        to = t;
+        next = nullptr;
+    }
+    void showSeatMap()
+    {
+        cout << "\n\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\t\t\t      Seat Map\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\t";
+        for (int i = 1; i <= 32; ++i)
+        {
+            bool booked = false;
+            for (const auto& p : passengers)
+            {
+                if (p.seatNumber == i)
+                {
+                    booked = true;
+                    break;
+                }
+            }
+            if (booked)
+            {
+                cout << "\t[" << setw(2) << "X" << "]";
+            }
+            else
+            {
+                cout << "\t[" << setw(2) << i << "]";
+            }
+            if (i % 4 == 0)
+            {
+                cout << "\n";
+                if (i < 32)
+                {
+                    cout << "\t\t\t\t";
+                }
+            }
+        }
+        cout << "\n\n";
+    }
+    void bookSeat()
+    {
+        string seat_str;
+        int seat;
+        cout << "\n\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\t\t\t    Book a Seat\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\tEnter seat number: ";
+        getline(cin, seat_str);
+        try
+        {
+            seat = stoi(seat_str);
+        }
+        catch (...)
+        {
+            cout << "\t\t\t\tInvalid input. Please enter a number.\n";
+            return;
+        }
+        if (seat < 1 || seat > 32)
+        {
+            cout << "\t\t\t\tInvalid seat number!\n";
+            return;
+        }
+        for (const auto& p : passengers)
+        {
+            if (p.seatNumber == seat)
+            {
+                cout << "\t\t\t\tSeat already booked!\n";
+                return;
+            }
+        }
+        Passenger newPassenger;
+        newPassenger.seatNumber = seat;
+        cout << "\t\t\t\tEnter passenger name: ";
+        getline(cin, newPassenger.name);
+        passengers.push_back(newPassenger);
+        cout << "\t\t\t\tSeat booked successfully!\n";
+    }
+};
+class BusReservationSystem
+{
+private:
+    Bus* head;
+
+public:
+    BusReservationSystem()
+    {
+        head = nullptr;
+    }
+    void addBus()
+    {
+        string bn, dn, at, dt, f, t;
+        cout << "\n\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\t\t\t     Add New Bus\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\tEnter Bus Number: ";
+        getline(cin, bn);
+        cout << "\t\t\t\tEnter Driver's Name: ";
+        getline(cin, dn);
+        cout << "\t\t\t\tEnter Arrival Time: ";
+        getline(cin, at);
+        cout << "\t\t\t\tEnter Departure Time: ";
+        getline(cin, dt);
+        cout << "\t\t\t\tFrom: ";
+        getline(cin, f);
+        cout << "\t\t\t\tTo: ";
+        getline(cin, t);
+        Bus* newBus = new Bus(bn, dn, at, dt, f, t);
+        if (!head)
+        {
+            head = newBus;
+        }
+        else
+        {
+            Bus* temp = head;
+            while (temp->next)
+            {
+                temp = temp->next;
+            }
+            temp->next = newBus;
+        }
+        cout << "\n\t\t\t\tBus added successfully!\n";
+    }
+    void showAllBuses()
+    {
+        Bus* temp = head;
+        int count = 1;
+        cout << "\n\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\t\t\t   Available Buses\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        if (!temp)
+        {
+            cout << "\t\t\t\tNo buses available at the moment.\n";
+        }
+        while(temp)
+        {
+            cout << "\t\t\t\t" << count++ << ". Bus No: " << temp->busNumber << "\n";
+            cout << "\t\t\t\t   Driver: " << temp->driverName << "\n";
+            cout << "\t\t\t\t   Arrival: " << temp->arrivalTime << "\n";
+            cout << "\t\t\t\t   Departure: " << temp->departureTime << "\n";
+            cout << "\t\t\t\t   From: " << temp->from << "\n";
+            cout << "\t\t\t\t   To: " << temp->to << "\n";
+            cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+            temp = temp->next;
+        }
+    }
+    void searchBus()
+    {
+        string bn;
+        cout << "\n\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\t\t\t   Search for a Bus\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\tEnter bus number: ";
+        getline(cin, bn);
+        Bus* temp = head;
+        while (temp)
+        {
+            if (temp->busNumber == bn)
+            {
+                cout << "\n\t\t\t\tBus Found!\n";
+                cout << "\t\t\t\tBus No: " << temp->busNumber << "\n";
+                cout << "\t\t\t\tDriver: " << temp->driverName << "\n";
+                cout << "\t\t\t\tArrival: " << temp->arrivalTime << "\n";
+                cout << "\t\t\t\tDeparture: " << temp->departureTime << "\n";
+                cout << "\t\t\t\tFrom: " << temp->from << "\n";
+                cout << "\t\t\t\tTo: " << temp->to << "\n";
+                temp->showSeatMap();
+                return;
+            }
+            temp = temp->next;
+        }
+        cout << "\t\t\t\tBus not found!\n";
+    }
+    void bookASeat()
+    {
+        if(!head)
+        {
+            cout << "\t\t\t\tPlease, add a bus first!" << endl;
+            return;
+        }
+        string bn;
+        cout << "\n\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\t\t\t  Book a Seat on a Bus\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\tEnter bus number: ";
+        getline(cin, bn);
+        Bus* temp = head;
+        while(temp)
+        {
+            if (temp->busNumber == bn)
+            {
+                temp->showSeatMap();
+                temp->bookSeat();
+                return;
+            }
+            temp = temp->next;
+        }
+        cout << "\t\t\t\tBus not found!\n";
+    }
+};
+void pressEnterToContinue()
+{
+    cout << "\n\n\t\t\t\tPress Enter to continue...";
+    string dummy;
+    getline(cin, dummy);
+}
+int main()
+{
+    BusReservationSystem brs;
+    int choice = 0;
+
+    while (true)
+    {
+#ifdef _WIN32
+        system("cls");
+#else
+        system("clear");
+#endif
+
+        cout << "\n\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\t\t   Bus Ticket Reservation System\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\t\t\t1. Add Bus\n";
+        cout << "\t\t\t\t\t\t2. Show All Buses\n";
+        cout << "\t\t\t\t\t\t3. Search Bus\n";
+        cout << "\t\t\t\t\t\t4. Book a Seat\n";
+        cout << "\t\t\t\t\t\t5. Exit\n";
+        cout << "\t\t\t\t<><><><><><><><><><><><><><><><><><><><><><><><><><>\n";
+        cout << "\t\t\t\t\t\tEnter your choice: ";
+        string choice_str;
+        getline(cin, choice_str);
+        try
+        {
+            if (!choice_str.empty())
+            {
+                choice = stoi(choice_str);
+            }
+            else
+            {
+                choice = 0;
+            }
+        }
+        catch (...)
+        {
+            choice = 0;
+        }
+        switch (choice)
+        {
+        case 1:
+            brs.addBus();
+            pressEnterToContinue();
+            break;
+        case 2:
+            brs.showAllBuses();
+            pressEnterToContinue();
+            break;
+        case 3:
+            brs.searchBus();
+            pressEnterToContinue();
+            break;
+        case 4:
+            brs.bookASeat();
+            pressEnterToContinue();
+            break;
+        case 5:
+            cout << "\n\t\t\t\tThank you for using the Bus Reservation System!\n";
+            return 0;
+        default:
+            cout << "\n\t\t\t\tInvalid choice! Please try again.\n";
+            pressEnterToContinue();
+        }
+    }
+    return 0;
+}
